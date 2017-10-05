@@ -1,0 +1,29 @@
+version: '2'
+services:
+  fluentd:
+    build: ./fluentd
+    environment:
+      - FLUENTD_CONF=fluentd.conf
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
+  elasticsearch:
+    image: armhfbuild/elasticsearch
+    expose:
+      - 9200
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: armhfbuild/kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
